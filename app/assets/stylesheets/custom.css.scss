@@ -2,7 +2,13 @@
 
 /* Remember: '.' is a rule to style a class,
              '#' is a rule to style a CSS ID,
+             ':' is a rule to style an attribute (?),
              otherwise it's a rule to style an HTML tag. */
+
+/* mixins, variables, etc. */
+
+$grayMediumLight: #eaeaea;
+$hoverBlue: #0040FF;
 
 /* universal */
 
@@ -22,12 +28,23 @@ textarea {
   resize: vertical;
 }
 
+/* These two:
+ *
+ * .center {
+ *   text-align: center;
+ * }
+ *
+ * .center h1 {
+ *   margin-bottom: 10px;
+ * }
+ *
+ * Can be replaced by this nested: */
+
 .center {
   text-align: center;
-}
-
-.center h1 {
-  margin-bottom: 10px;
+  h1 {
+    margin-bottom: 10px;
+  }
 }
 
 /* typography */
@@ -63,17 +80,16 @@ p {
   float: left;
   margin-right: 10px;
   font-size: 1.7em;
-  color: #999;
+  color: #aaa;
   text-transform: uppercase;
   letter-spacing: -1px;
   padding-top: 9px;
   font-weight: bold;
   line-height: 1;
-}
-
-#logo :hover {
-   color: #fff;
-   text-decoration: none;
+  &:hover {
+    color: $hoverBlue;
+    text-decoration: none;
+  }
 }
 
 /* Make my sample look like the book, with a black background
@@ -91,27 +107,35 @@ footer {
   padding-top: 5px;
   border-top: 1px solid #eaeaea;
   color: #999;
+  a {
+    color: #555;
+    &:hover {
+      color: $hoverBlue;
+      text-decoration: none;
+    }
+  }
+  small {
+    float: left;
+  }
+  ul {
+    float: right;
+    list-style: none;
+    li {
+      float: left;
+      margin-left: 10px;
+    }
+    &:hover {
+       color: $hoverBlue;
+       text-decoration: none;
+    }
+  }
 }
 
-footer a {
-  color: #555;
+/* The name says it all.  I can't figure out how to get the Home,
+   Help, and Sign In header links to turn blue on hover over, except
+   by using IDs for each li.  Grrrr! */
+#hack1, #hack2, #hack3 {
+  &:hover {
+    color: $hoverBlue;
+  }
 }
-
-footer a :hover {
-  color: #222;
-}
-
-footer small {
-  float: left;
-}
-
-footer ul {
-  float: right;
-  list-style: none;
-}
-
-footer ul li {
-  float: left;
-  margin-left: 10px;
-}
-
