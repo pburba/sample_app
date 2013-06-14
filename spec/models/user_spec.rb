@@ -14,13 +14,18 @@ require 'spec_helper'
 describe User do
 
   before do
-    @user = User.new name: "Example User", email: "user@example.com"
-  end
+    @user = User.new(name: "Example User", email: "user@example.com",
+                     password: "foobar", password_confirmation: "foobar")
+  end 
 
   subject { @user }
 
   it { should respond_to(:name) }
   it { should respond_to(:email) }
+  it { should respond_to(:password_digest) }
+  it { should respond_to(:password) }
+  it { should respond_to(:password_confirmation) }
+  it { should respond_to(:authenticate) }
 
   it { should be_valid }
 
@@ -68,6 +73,53 @@ describe User do
     end
 
     it { should_not be_valid }
+  end
+
+  describe "when password is not present" do
+    before { @user.password = @user.password_confirmation = " " }
+    it { should_not be_valid }
+  end
+
+  describe "when password doesn't match confirmation" do
+    before { @user.password_confirmation = "mismatch" }
+    it { should_not be_valid }
+  end
+
+  describe "when password confirmation is nil" do
+    before { @user.password_confirmation = nil }
+    it { should_not be_valid }
+  end 
+  
+  describe "with a password that's too short" do
+    before { @user.password = @user.password_confirmation = "a" * 5 }
+    it { should be_invalid }
+  end 
+
+  describe "return value of authenticate method" do
+    # Save the user to the database so we can later retrieve it
+    # with find_by_email.
+    before { @user.save }
+  
+    # RSpec’s let method provides a convenient way to create local
+    # variables inside tests. The syntax might look a little strange,
+    # but its effect is similar to variable assignment. The argument
+    # of let is a symbol, and it takes a block whose return value is
+    # assigned to a local variable with the symbol’s name. 
+    let(:found_user) { User.find_by_email(@user.email) }
+
+    describe "with valid password" do
+      it { should == found_user.authenticate(@user.password) }
+    end
+
+    describe "with invalid password" do
+      let(:user_for_invalid_password) { found_user.authenticate("invalid") }
+
+      # Shouldn't return the user if not authenticated...
+      it { should_not == user_for_invalid_password }
+      # ...nor should it return *any* user!
+      # Note that 'specify' and 'it' are synonymous:
+      specify { user_for_invalid_password.should be_false }
+    end 
   end
 
 end
